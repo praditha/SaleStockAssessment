@@ -1,0 +1,126 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Sale Stock Assessment",
+        "description": "API Documentation of Sale Stock Assessment for Praditha Hidayat",
+        "contact": {
+            "name": "Praditha Hidayat",
+            "email": "pradithah.1124@gmail.com"
+        },
+        "license": {
+            "name": "Unlicense"
+        },
+        "version": "1.0.0"
+    },
+    "basePath": "/api",
+    "paths": {
+        "/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Check user credentials",
+                "description": "Validate the user credentials & return access-token when success",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "formData",
+                        "description": "User's Email. e.g. admin@salestock.com",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "password",
+                        "in": "formData",
+                        "description": "User's password. e.g. secret",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "properties": {
+                                "success": {
+                                    "description": "Check user credentials",
+                                    "type": "boolean"
+                                },
+                                "rescode": {
+                                    "description": "Check user credentials",
+                                    "type": "integer"
+                                },
+                                "message": {
+                                    "description": "Check user credentials",
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "description": "Check user credentials",
+                                    "$ref": "#/definitions/UserLogin"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "User": {
+            "required": [
+                "name",
+                "email",
+                "password",
+                "role"
+            ],
+            "properties": {
+                "id": {
+                    "description": "id",
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "name": {
+                    "description": "User's name",
+                    "type": "string"
+                },
+                "email": {
+                    "description": "User's E-mail",
+                    "type": "string"
+                },
+                "role": {
+                    "description": "User's role: admin or customer",
+                    "type": "string"
+                },
+                "created_at": {
+                    "description": "created_at",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "updated_at": {
+                    "description": "updated_at",
+                    "type": "string",
+                    "format": "date-time"
+                }
+            }
+        },
+        "UserLogin": {
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "token": {
+                    "description": "User's token",
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/User"
+                }
+            }
+        }
+    }
+}
