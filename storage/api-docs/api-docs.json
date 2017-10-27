@@ -43,7 +43,7 @@
                                     "type": "string"
                                 },
                                 "password": {
-                                    "description": "e.g. secretd",
+                                    "description": "e.g. secret",
                                     "type": "string"
                                 }
                             }
@@ -76,9 +76,6 @@
                 ],
                 "summary": "Logout user",
                 "description": "Logout User",
-                "produces": [
-                    "application/json"
-                ],
                 "parameters": [
                     {
                         "name": "Authorization",
@@ -105,9 +102,80 @@
                     }
                 }
             }
+        },
+        "/products": {
+            "get": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Retrieve all products",
+                "description": "Retrieve all products with detail information such as product name, price and available quantity",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "Token from `Authorization` header of login response",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "description": "Retrieve all products",
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "description": "Retrieve all products",
+                                    "$ref": "#/definitions/Product"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "Product": {
+            "required": [
+                "name",
+                "price",
+                "quantity"
+            ],
+            "properties": {
+                "id": {
+                    "description": "id",
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "name": {
+                    "description": "Product's name",
+                    "type": "string"
+                },
+                "price": {
+                    "description": "Product's price",
+                    "type": "integer"
+                },
+                "quantity": {
+                    "description": "Product's quantity",
+                    "type": "integer"
+                },
+                "created_at": {
+                    "description": "created_at",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "updated_at": {
+                    "description": "updated_at",
+                    "type": "string",
+                    "format": "date-time"
+                }
+            }
+        },
         "User": {
             "required": [
                 "name",

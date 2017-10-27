@@ -15,3 +15,8 @@ use Illuminate\Http\Request;
 
 Route::post('/login', 'AuthenticateController@authenticate')->name('login');
 Route::get('/logout', 'AuthenticateController@logout')->name('logout');
+
+Route::group(['middleware' => ['jwt.auth', 'jwt.refresh']], function () {
+	Route::get('/products', 'ProductController@showAll')->name('get-products');
+});
+

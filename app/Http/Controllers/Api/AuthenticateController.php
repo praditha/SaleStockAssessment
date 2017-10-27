@@ -28,7 +28,7 @@ class AuthenticateController extends BaseController
      *          required=true,
      *          @SWG\Schema(
      *          	@SWG\Property(property="email", type="string", description="e.g. admin@salestock.com / customer@mail.com"),
-     *          	@SWG\Property(property="password", type="string", description="e.g. secretd")
+     *          	@SWG\Property(property="password", type="string", description="e.g. secret")
      *          ),
      *      ),
      *      @SWG\Response(
@@ -79,7 +79,6 @@ class AuthenticateController extends BaseController
      *      summary="Logout user",
      *      tags={"Auth"},
      *      description="Logout User",
-     *      produces={"application/json"},
      *      @SWG\Parameter(
      *          name="Authorization",
      *          in="header",
