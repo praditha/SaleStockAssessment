@@ -103,6 +103,41 @@
                 }
             }
         },
+        "/coupons": {
+            "get": {
+                "tags": [
+                    "Coupon"
+                ],
+                "summary": "Retrieve all available coupon",
+                "description": "Retrieve all available coupon with detail information such as coupon name, description, validity date, amount, and available quantity",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "Token from `Authorization` header of login response",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "description": "Retrieve all available coupon",
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "description": "Retrieve all available coupon",
+                                    "$ref": "#/definitions/Coupon"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/products": {
             "get": {
                 "tags": [
@@ -140,6 +175,68 @@
         }
     },
     "definitions": {
+        "Coupon": {
+            "required": [
+                "name",
+                "description",
+                "amount",
+                "type",
+                "valid_from",
+                "valid_to",
+                "quantity"
+            ],
+            "properties": {
+                "id": {
+                    "description": "id",
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "name": {
+                    "description": "Coupon's name",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "Coupon's description",
+                    "type": "string"
+                },
+                "amount": {
+                    "description": "Coupon's amount",
+                    "type": "integer"
+                },
+                "type": {
+                    "description": "Coupon's type",
+                    "type": "string",
+                    "enum": [
+                        "percentage",
+                        "nominal"
+                    ]
+                },
+                "valid_from": {
+                    "description": "Start date of coupon period",
+                    "type": "string",
+                    "format": "date"
+                },
+                "valid_to": {
+                    "description": "End date of coupon period",
+                    "type": "string",
+                    "format": "date"
+                },
+                "quantity": {
+                    "description": "Coupon's quantity",
+                    "type": "integer"
+                },
+                "created_at": {
+                    "description": "created_at",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "updated_at": {
+                    "description": "updated_at",
+                    "type": "string",
+                    "format": "date-time"
+                }
+            }
+        },
         "Product": {
             "required": [
                 "name",
