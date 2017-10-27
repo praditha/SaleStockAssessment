@@ -21,20 +21,15 @@ class AuthenticateController extends BaseController
      *      summary="Check user credentials",
      *      tags={"Auth"},
      *      description="Validate the user credentials & return access-token when success",
-     *      produces={"application/json"},
      *      @SWG\Parameter(
-     *          name="email",
-     *          in="formData",
-     *          type="string",
-     *          description="User's Email. e.g. admin@salestock.com",
-     *          required=true
-     *      ),
-     *      @SWG\Parameter(
-     *          name="password",
-     *          in="formData",
-     *          type="string",
-     *          description="User's password. e.g. secret",
-     *          required=true
+     *          name="body",
+     *          in="body",
+     *          description="User credentials include email & password",
+     *          required=true,
+     *          @SWG\Schema(
+     *          	@SWG\Property(property="email", type="string", description="e.g. admin@salestock.com / customer@mail.com"),
+     *          	@SWG\Property(property="password", type="string", description="e.g. secretd")
+     *          ),
      *      ),
      *      @SWG\Response(
      *          response=200,

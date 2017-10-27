@@ -13,6 +13,15 @@
         "version": "1.0.0"
     },
     "basePath": "/api",
+    "schemes": [
+        "http"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
     "paths": {
         "/login": {
             "post": {
@@ -21,21 +30,60 @@
                 ],
                 "summary": "Check user credentials",
                 "description": "Validate the user credentials & return access-token when success",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "User credentials include email & password",
+                        "required": true,
+                        "schema": {
+                            "properties": {
+                                "email": {
+                                    "description": "e.g. admin@salestock.com / customer@mail.com",
+                                    "type": "string"
+                                },
+                                "password": {
+                                    "description": "e.g. secretd",
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "description": "Check user credentials",
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "description": "Check user credentials",
+                                    "$ref": "#/definitions/UserLogin"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Logout user",
+                "description": "Logout User",
                 "produces": [
                     "application/json"
                 ],
                 "parameters": [
                     {
-                        "name": "email",
-                        "in": "formData",
-                        "description": "User's Email. e.g. admin@salestock.com",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "name": "password",
-                        "in": "formData",
-                        "description": "User's password. e.g. secret",
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "Token from `Authorization` header of login response",
                         "required": true,
                         "type": "string"
                     }
@@ -45,24 +93,14 @@
                         "description": "successful operation",
                         "schema": {
                             "properties": {
-                                "success": {
-                                    "description": "Check user credentials",
-                                    "type": "boolean"
-                                },
-                                "rescode": {
-                                    "description": "Check user credentials",
-                                    "type": "integer"
-                                },
                                 "message": {
-                                    "description": "Check user credentials",
+                                    "description": "Logout the user",
                                     "type": "string"
                                 },
                                 "data": {
-                                    "description": "Check user credentials",
-                                    "$ref": "#/definitions/UserLogin"
+                                    "description": "Logout the user"
                                 }
-                            },
-                            "type": "object"
+                            }
                         }
                     }
                 }
