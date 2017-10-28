@@ -36,6 +36,7 @@ Route::group(['middleware' => ['jwt.auth']], function () {
 	// Admin Only
 	Route::group(['middleware' => 'is_role:admin'], function() {
 		// Order Resource
+		Route::get('/orders', 'OrderController@showAll')->name('get-order');
 		Route::get('/orders/{id}', 'OrderController@show')->name('show-order');
 		Route::post('/orders/{id}/ship', 'OrderController@shipOrder')->name('ship-order');
 		Route::post('/orders/{id}/cancel', 'OrderController@cancelOrder')->name('cancel-order');

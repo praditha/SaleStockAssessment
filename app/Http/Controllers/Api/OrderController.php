@@ -71,6 +71,12 @@ class OrderController extends BaseController
     	}
     }
 
+    public function showAll() {
+    	$order = Order::orderBy('created_at')->get();
+
+    	return $this->sendResponse('Orders retrieved successfully', $order);
+    }
+
     /**
      * Show order detail
      * @return \Illuminate\Http\Response
