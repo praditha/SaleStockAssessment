@@ -16,11 +16,14 @@ use Illuminate\Http\Request;
 Route::post('/login', 'AuthenticateController@authenticate')->name('login');
 Route::get('/logout', 'AuthenticateController@logout')->name('logout');
 
-Route::group(['middleware' => ['jwt.auth', 'jwt.refresh']], function () {
+Route::group(['middleware' => ['jwt.auth']], function () {
 	// Product Resource
 	Route::get('/products', 'ProductController@showAll')->name('get-products');
 
 	// Coupon Resource
 	Route::get('/coupons', 'CouponController@showAll')->name('get-coupons');
+
+	// Order Resource
+	Route::post('/orders', 'OrderController@addOrder')->name('post-order');
 });
 

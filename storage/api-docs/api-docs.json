@@ -138,6 +138,93 @@
                 }
             }
         },
+        "/orders": {
+            "post": {
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Add order",
+                "description": "Select available product & available coupon and put as an order",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "Token from `Authorization` header of login response",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Order details",
+                        "required": true,
+                        "schema": {
+                            "properties": {
+                                "products": {
+                                    "description": "Ordered products",
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "product_id": {
+                                                "description": "Product ID",
+                                                "type": "integer"
+                                            },
+                                            "quantity": {
+                                                "description": "Ordered product quantity",
+                                                "type": "integer"
+                                            }
+                                        }
+                                    }
+                                },
+                                "coupon_id": {
+                                    "description": "Coupon ID",
+                                    "type": "integer"
+                                },
+                                "recipient": {
+                                    "description": "Recipient Detail",
+                                    "properties": {
+                                        "name": {
+                                            "description": "Recipient name",
+                                            "type": "string"
+                                        },
+                                        "phone_no": {
+                                            "description": "Recipient phone no",
+                                            "type": "string"
+                                        },
+                                        "email": {
+                                            "description": "Recipient email",
+                                            "type": "string"
+                                        },
+                                        "address": {
+                                            "description": "Recipient address",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "description": "Add an order",
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "description": "Add an order",
+                                    "$ref": "#/definitions/Order"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/products": {
             "get": {
                 "tags": [
@@ -224,6 +311,82 @@
                 "quantity": {
                     "description": "Coupon's quantity",
                     "type": "integer"
+                },
+                "created_at": {
+                    "description": "created_at",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "updated_at": {
+                    "description": "updated_at",
+                    "type": "string",
+                    "format": "date-time"
+                }
+            }
+        },
+        "Order": {
+            "required": [
+                "customer_id",
+                "products",
+                "total_price",
+                "status"
+            ],
+            "properties": {
+                "id": {
+                    "description": "id",
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "customer_id": {
+                    "description": "Customer ID who order",
+                    "type": "integer"
+                },
+                "products": {
+                    "description": "Products which ordere by customer",
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "id": {
+                                "description": "id",
+                                "type": "integer"
+                            },
+                            "name": {
+                                "description": "Product's name",
+                                "type": "string"
+                            },
+                            "price": {
+                                "description": "Product's price",
+                                "type": "integer"
+                            },
+                            "quantity": {
+                                "description": "Product's quantity",
+                                "type": "integer"
+                            },
+                            "created_at": {
+                                "description": "created_at",
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "updated_at": {
+                                "description": "updated_at",
+                                "type": "string",
+                                "format": "date-time"
+                            }
+                        }
+                    }
+                },
+                "total_price": {
+                    "description": "Total price of order",
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "Order's status",
+                    "type": "string",
+                    "enum": [
+                        "ordered",
+                        "paid",
+                        "shipped"
+                    ]
                 },
                 "created_at": {
                     "description": "created_at",

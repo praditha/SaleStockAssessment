@@ -88,6 +88,9 @@ return [
     'uploaded'             => 'The :attribute failed to upload.',
     'url'                  => 'The :attribute format is invalid.',
 
+    'product_available' => 'Product is out of stock',
+    'product_available' => 'Coupon is not available',
+
     /*
     |--------------------------------------------------------------------------
     | Custom Validation Language Lines
