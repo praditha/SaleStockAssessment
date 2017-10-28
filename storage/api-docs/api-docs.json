@@ -138,6 +138,41 @@
                 }
             }
         },
+        "/logistic-partners": {
+            "get": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Retrieve all logistic partners",
+                "description": "Retrieve all logitstic partners",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "Token from `Authorization` header of login response",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "description": "Retrieve all logistic partners",
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "description": "Retrieve all logistic partners",
+                                    "$ref": "#/definitions/LogisticPartner"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/orders": {
             "post": {
                 "tags": [
@@ -225,6 +260,202 @@
                 }
             }
         },
+        "/orders/{id}": {
+            "get": {
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Get order detail",
+                "description": "Get order detail",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "Token from `Authorization` header of login response",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of Order",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "description": "Show order detail",
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "description": "Show order detail",
+                                    "$ref": "#/definitions/Order"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/orders/{id}/confirm/payment": {
+            "post": {
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Confirm payment",
+                "description": "Confirm the payment of an order. Assumption: the confirmation payment code is VALID",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "Token from `Authorization` header of login response",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of Order",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Confirmation payment code",
+                        "required": true,
+                        "schema": {
+                            "properties": {
+                                "confirmation_payment_code": {
+                                    "description": "Confirmation payment code from bank transfer process",
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "description": "Confirm Payment",
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "description": "Confirm Payment",
+                                    "$ref": "#/definitions/Order"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/orders/{id}/ship": {
+            "post": {
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Ship the order",
+                "description": "Ship the order and give the order to logistic partner",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "Token from `Authorization` header of login response",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of Order",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Confirmation payment code",
+                        "required": true,
+                        "schema": {
+                            "properties": {
+                                "logistic_partner_id": {
+                                    "description": "Logistic partner ID",
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "description": "Ship the order",
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "description": "Ship the order",
+                                    "$ref": "#/definitions/Order"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/orders/{id}/cancel": {
+            "post": {
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Cancel the order",
+                "description": "Cancel the order",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "Token from `Authorization` header of login response",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of Order",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "description": "Cancel the order",
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "description": "Cancel the order",
+                                    "$ref": "#/definitions/Order"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/products": {
             "get": {
                 "tags": [
@@ -253,6 +484,102 @@
                                 "data": {
                                     "description": "Retrieve all products",
                                     "$ref": "#/definitions/Product"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/shipment/{id}/status": {
+            "get": {
+                "tags": [
+                    "Shipment"
+                ],
+                "summary": "Get shipment status",
+                "description": "Retrieve shipment status",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "Token from `Authorization` header of login response",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of Shipment",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "description": "Show shipment status",
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "description": "Show shipment status",
+                                    "$ref": "#/definitions/Shipment"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/shipment/{id}/status/{status}": {
+            "put": {
+                "tags": [
+                    "Shipment"
+                ],
+                "summary": "Get shipment status",
+                "description": "Retrieve shipment status",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "Token from `Authorization` header of login response",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of Shipment",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "status",
+                        "in": "path",
+                        "description": "Shipment status",
+                        "required": true,
+                        "type": "integer",
+                        "enum": [
+                            "packing",
+                            "on the way",
+                            "delivered"
+                        ]
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "description": "Change shipment status",
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "description": "Change shipment status",
+                                    "$ref": "#/definitions/Shipment"
                                 }
                             }
                         }
@@ -324,6 +651,32 @@
                 }
             }
         },
+        "LogisticPartner": {
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "id": {
+                    "description": "id",
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "name": {
+                    "description": "Partner's name",
+                    "type": "string"
+                },
+                "created_at": {
+                    "description": "created_at",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "updated_at": {
+                    "description": "updated_at",
+                    "type": "string",
+                    "format": "date-time"
+                }
+            }
+        },
         "Order": {
             "required": [
                 "customer_id",
@@ -357,20 +710,6 @@
                             "price": {
                                 "description": "Product's price",
                                 "type": "integer"
-                            },
-                            "quantity": {
-                                "description": "Product's quantity",
-                                "type": "integer"
-                            },
-                            "created_at": {
-                                "description": "created_at",
-                                "type": "string",
-                                "format": "date-time"
-                            },
-                            "updated_at": {
-                                "description": "updated_at",
-                                "type": "string",
-                                "format": "date-time"
                             }
                         }
                     }
@@ -423,6 +762,61 @@
                 "quantity": {
                     "description": "Product's quantity",
                     "type": "integer"
+                },
+                "created_at": {
+                    "description": "created_at",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "updated_at": {
+                    "description": "updated_at",
+                    "type": "string",
+                    "format": "date-time"
+                }
+            }
+        },
+        "Shipment": {
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "id": {
+                    "description": "id",
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "order_id": {
+                    "description": "Order ID",
+                    "type": "integer"
+                },
+                "logistic_partner_id": {
+                    "description": "Logistic Partner ID",
+                    "type": "integer"
+                },
+                "recipient_name": {
+                    "description": "Recipient name",
+                    "type": "string"
+                },
+                "recipient_email": {
+                    "description": "Recipient email",
+                    "type": "string"
+                },
+                "recipient_phone_no": {
+                    "description": "Recipient phone no",
+                    "type": "string"
+                },
+                "recipient_address": {
+                    "description": "Recipient address",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "Order's status",
+                    "type": "string",
+                    "enum": [
+                        "packing",
+                        "on the way",
+                        "delivered"
+                    ]
                 },
                 "created_at": {
                     "description": "created_at",

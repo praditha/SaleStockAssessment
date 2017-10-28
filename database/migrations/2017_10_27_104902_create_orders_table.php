@@ -18,11 +18,8 @@ class CreateOrdersTable extends Migration
             $table->integer('customer_id')->unsigned();
             $table->integer('coupon_id')->unsigned()->nullable();
             $table->double('total_price', 12, 2);
-            $table->enum('status', ['ordered', 'paid', 'shipped']);
-            $table->string('recipient_name');
-            $table->string('recipient_email');
-            $table->string('recipient_phone_no');
-            $table->string('recipient_address');
+            $table->string('confirmation_payment_code')->nullable();
+            $table->enum('status', ['ordered', 'paid', 'shipped', 'canceled']);
             $table->timestamps();
 
             $table->foreign('customer_id')->references('id')->on('users');

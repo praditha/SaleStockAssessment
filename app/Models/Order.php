@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Product;
 use App\Models\Coupon;
+use App\Models\Shipment;
 use Validator, DB;
 
 /**
@@ -29,10 +30,7 @@ use Validator, DB;
  *          @SWG\Items(
  *          	@SWG\Property(property="id", type="integer", description="id"),
  *          	@SWG\Property(property="name", type="string", description="Product's name"),
- *          	@SWG\Property(property="price", type="integer", description="Product's price"),
- *          	@SWG\Property(property="quantity", type="integer", description="Product's quantity"),
- *          	@SWG\Property(property="created_at", type="string", description="created_at", format="date-time"),
- *          	@SWG\Property(property="updated_at", type="string", description="updated_at", format="date-time"),
+ *          	@SWG\Property(property="price", type="integer", description="Product's price")
  *          )
  *      ),
  *      @SWG\Property(
@@ -66,10 +64,18 @@ class Order extends Model
 
 	// The products that belong to order
 	public function products() {
-		return $this->belongsToMany('App\Models\Product')->withTimestamps();;
+		return $this->belongsToMany('App\Models\Product')
+			->select('id', 'name', 'price')
+			->withPivot('quantity')
+			->withTimestamps();
 	}
 
-	public $status = TRUE,
+	// The shipment that belong to order
+	public function shipment() {
+		return $this->hasOne('App\Models\Shipment', 'order_id');
+	}
+
+	public $isSuccess = TRUE,
 		$result,
 		$errorMessage;
 
@@ -94,7 +100,7 @@ class Order extends Model
 
 		$validator = Validator::make($input, $rules);
 		if ($validator->fails()) {
-    		$this->status = FALSE;
+    		$this->isSuccess = FALSE;
 			$this->errorMessage = $validator->errors()->first();
 			return;
     	}
@@ -108,10 +114,6 @@ class Order extends Model
 	    	$this->coupon_id 			= $request->has('coupon_id') ? $input['coupon_id'] : null;
 	    	$this->total_price			= 0;
 	    	$this->status 				= 'ordered';
-	    	$this->recipient_name		= $input['recipient']['name'];
-	    	$this->recipient_phone_no	= $input['recipient']['phone_no'];
-	    	$this->recipient_email		= $input['recipient']['email'];
-	    	$this->recipient_address	= $input['recipient']['address'];
 	    	$this->save();
 
 	    	$totalPrice = 0;
@@ -151,12 +153,153 @@ class Order extends Model
 	    	$this->total_price = $totalPrice;
 	    	$this->save();
 
+	    	// Prepare the shipment
+	    	$shipment = new Shipment;
+	    	$shipment->id 					= time();
+	    	$shipment->order_id				= $this->id;
+	    	$shipment->recipient_name		= $input['recipient']['name'];
+	    	$shipment->recipient_phone_no	= $input['recipient']['phone_no'];
+	    	$shipment->recipient_email		= $input['recipient']['email'];
+	    	$shipment->recipient_address	= $input['recipient']['address'];
+	    	$shipment->save();
+
+	    	// Get Order detail
+	    	$this->result = $this->find($this->id);
+
 	    	DB::commit();
     	} catch (\Exception $e) {
     		DB::rollback();
-    		$this->status = FALSE;
+    		$this->isSuccess = FALSE;
     		$this->errorMessage = $e->getMessage();
     		return;
+    	}
+	}
+
+	public function confirmPayment($request, $id) {
+		$input = $request->input();
+		$input['order_id'] = $id;
+
+		$validator = Validator::make($input, [
+			'order_id' => 'required|exists:orders,id',
+			'confirmation_payment_code' => 'required',
+		]);
+
+		if ($validator->fails()) {
+    		$this->isSuccess = FALSE;
+			$this->errorMessage = $validator->errors()->first();
+			return;
+    	}
+
+    	try {
+	    	// Confirmation Payment Code is valid then save it
+	    	$order = $this->find($id);
+
+	    	if ($order->status != 'ordered') {
+	    		$this->errorMessage = $this->getOrderStatus($order);
+	    		$this->isSuccess = FALSE;
+	    		return;
+	    	}
+
+	    	DB::beginTransaction();
+			    	
+	    	$order->confirmation_payment_code = $input['confirmation_payment_code'];
+	    	$order->status = 'paid';
+	    	$order->save();
+
+	    	DB::commit();
+
+	    	$this->result = $order;
+	    	return;
+    	} catch (\Exception $e) {
+    		DB::rollback();
+    		$this->isSuccess = FALSE;
+    		$this->errorMessage = $e->getMessage();
+    		return;
+    	}
+	}
+
+	public function shipOrder($id, $request) {
+		$input = $request->input();
+		$input['order_id'] = $id;
+
+		$validator = Validator::make($input, [
+			'order_id' => 'required|exists:orders,id',
+			'logistic_partner_id' => 'required|exists:logistic_partners,id',
+		]);
+
+		if ($validator->fails()) {
+    		$this->isSuccess = FALSE;
+			$this->errorMessage = $validator->errors()->first();
+			return;
+    	}
+
+		try {
+	    	$order = $this->find($id);
+
+	    	if ($order->status != 'paid') {
+	    		$this->errorMessage = $this->getOrderStatus($order);
+	    		$this->isSuccess = FALSE;
+	    		return;
+	    	}
+
+	    	DB::beginTransaction();
+			    	
+	    	$order->status = 'shipped';
+	    	$order->save();
+
+	    	$shipment = Shipment::where('order_id', $order->id)->first();
+	    	$shipment->logistic_partner_id = $input['logistic_partner_id'];
+	    	$shipment->save();
+
+	    	DB::commit();
+
+	    	$this->result = $order;
+	    	return;
+    	} catch (\Exception $e) {
+    		DB::rollback();
+    		$this->isSuccess = FALSE;
+    		$this->errorMessage = $e->getMessage();
+    		return;
+    	}
+	}
+
+	public function cancelOrder($id) {
+		try {
+	    	$order = $this->find($id);
+
+	    	if ($order->status != 'ordered') {
+	    		$this->errorMessage = $this->getOrderStatus($order);
+	    		$this->isSuccess = FALSE;
+	    		return;
+	    	}
+
+	    	DB::beginTransaction();
+			    	
+	    	$order->status = 'canceled';
+	    	$order->save();
+
+	    	DB::commit();
+
+	    	$this->result = $order;
+	    	return;
+    	} catch (\Exception $e) {
+    		DB::rollback();
+    		$this->isSuccess = FALSE;
+    		$this->errorMessage = $e->getMessage();
+    		return;
+    	}
+	}
+
+	private function getOrderStatus($order) {
+		switch ($order->status) {
+    		case 'paid':
+    			return "The order with ID: {$order->id} has been paid";
+    		case 'shipped':
+    			return "The order with ID: {$order->id} has been shipped";
+    		case 'canceled':
+    			return "The order with ID: {$order->id} has been canceled";
+    		default:
+    			return "The order with ID: {$order->id} has been ordered";
     	}
 	}
 }

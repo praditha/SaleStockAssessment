@@ -64,8 +64,224 @@ class OrderController extends BaseController
     	$order = new Order;
     	$order->addOrder($request);
 
-    	if ($order->status) {
+    	if ($order->isSuccess) {
     		return $this->sendResponse("Your order have been successfully saved.", $order->result);
+    	} else {
+    		return $this->sendError(422, $order->errorMessage);
+    	}
+    }
+
+    /**
+     * Show order detail
+     * @return \Illuminate\Http\Response
+     *
+     *  @SWG\Get(
+     *      path="/orders/{id}",
+     *      summary="Get order detail",
+     *      tags={"Order"},
+     *      description="Get order detail",
+     *      @SWG\Parameter(
+     *          name="Authorization",
+     *          in="header",
+     *          type="string",
+     *          description="Token from `Authorization` header of login response",
+     *          required=true
+     *      ),
+     *      @SWG\Parameter(
+     *          name="id",
+     *          description="ID of Order",
+     *          type="string",
+     *          required=true,
+     *          in="path"
+     *      ),
+     *      @SWG\Response(
+     *          response=200,
+     *          description="successful operation",
+     *          @SWG\Schema(
+     *              @SWG\Property(
+     *                  property="message",
+     *                  type="string"
+     *              ),
+     *              @SWG\Property(
+     *                  property="data",
+     *                  ref="#/definitions/Order"
+     *              )
+     *          )
+     *      )
+     * )
+     */
+    public function show($id) {
+    	$order = Order::with('products')
+    		->with('shipment')
+    		->where('id', $id)
+    		->first();
+
+    	return $order;
+    }
+
+    /**
+     * Confirm Payment
+     * @return \Illuminate\Http\Response
+     *
+     *  @SWG\Post(
+     *      path="/orders/{id}/confirm/payment",
+     *      summary="Confirm payment",
+     *      tags={"Order"},
+     *      description="Confirm the payment of an order. Assumption: the confirmation payment code is VALID",
+     *      @SWG\Parameter(
+     *          name="Authorization",
+     *          in="header",
+     *          type="string",
+     *          description="Token from `Authorization` header of login response",
+     *          required=true
+     *      ),
+     *      @SWG\Parameter(
+     *          name="id",
+     *          description="ID of Order",
+     *          type="integer",
+     *          required=true,
+     *          in="path"
+     *      ),
+     *      @SWG\Parameter(
+     *          name="body",
+     *          in="body",
+     *          description="Confirmation payment code",
+     *          required=true,
+     *          @SWG\Schema(
+     *          	@SWG\Property(property="confirmation_payment_code", type="string", description="Confirmation payment code from bank transfer process")
+     *          )
+     *      ),
+     *      @SWG\Response(
+     *          response=200,
+     *          description="successful operation",
+     *          @SWG\Schema(
+     *              @SWG\Property(
+     *                  property="message",
+     *                  type="string"
+     *              ),
+     *              @SWG\Property(
+     *                  property="data",
+     *                  ref="#/definitions/Order"
+     *              )
+     *          )
+     *      )
+     * )
+     */
+    public function confirmPayment(Request $request, $id) {
+    	$order = new Order;
+    	$order->confirmPayment($request, $id);
+
+    	if ($order->isSuccess) {
+    		return $this->sendResponse("Your confirmation payment has been saved.", $order->result);
+    	} else {
+    		return $this->sendError(422, $order->errorMessage);
+    	}
+    }
+
+    /**
+     * Ship the order
+     * @return \Illuminate\Http\Response
+     *
+     *  @SWG\Post(
+     *      path="/orders/{id}/ship",
+     *      summary="Ship the order",
+     *      tags={"Order"},
+     *      description="Ship the order and give the order to logistic partner",
+     *      @SWG\Parameter(
+     *          name="Authorization",
+     *          in="header",
+     *          type="string",
+     *          description="Token from `Authorization` header of login response",
+     *          required=true
+     *      ),
+     *      @SWG\Parameter(
+     *          name="id",
+     *          description="ID of Order",
+     *          type="integer",
+     *          required=true,
+     *          in="path"
+     *      ),
+     *      @SWG\Parameter(
+     *          name="body",
+     *          in="body",
+     *          description="Confirmation payment code",
+     *          required=true,
+     *          @SWG\Schema(
+     *          	@SWG\Property(property="logistic_partner_id", type="string", description="Logistic partner ID")
+     *          )
+     *      ),
+     *      @SWG\Response(
+     *          response=200,
+     *          description="successful operation",
+     *          @SWG\Schema(
+     *              @SWG\Property(
+     *                  property="message",
+     *                  type="string"
+     *              ),
+     *              @SWG\Property(
+     *                  property="data",
+     *                  ref="#/definitions/Order"
+     *              )
+     *          )
+     *      )
+     * )
+     */
+    public function shipOrder(Request $request, $id) {
+    	$order = new Order;
+    	$order->shipOrder($id, $request);
+
+    	if ($order->isSuccess) {
+    		return $this->sendResponse("The order with ID: {$id} is successfully shipped.", $order->result);
+    	} else {
+    		return $this->sendError(422, $order->errorMessage);
+    	}
+    }
+
+    /**
+     * Cancel the order
+     * @return \Illuminate\Http\Response
+     *
+     *  @SWG\Post(
+     *      path="/orders/{id}/cancel",
+     *      summary="Cancel the order",
+     *      tags={"Order"},
+     *      description="Cancel the order",
+     *      @SWG\Parameter(
+     *          name="Authorization",
+     *          in="header",
+     *          type="string",
+     *          description="Token from `Authorization` header of login response",
+     *          required=true
+     *      ),
+     *      @SWG\Parameter(
+     *          name="id",
+     *          description="ID of Order",
+     *          type="integer",
+     *          required=true,
+     *          in="path"
+     *      ),
+     *      @SWG\Response(
+     *          response=200,
+     *          description="successful operation",
+     *          @SWG\Schema(
+     *              @SWG\Property(
+     *                  property="message",
+     *                  type="string"
+     *              ),
+     *              @SWG\Property(
+     *                  property="data",
+     *                  ref="#/definitions/Order"
+     *              )
+     *          )
+     *      )
+     * )
+     */
+    public function cancelOrder($id) {
+    	$order = new Order;
+    	$order->cancelOrder($id, 'canceled');
+
+    	if ($order->isSuccess) {
+    		return $this->sendResponse("The order with ID: {$id} is canceled.", $order->result);
     	} else {
     		return $this->sendError(422, $order->errorMessage);
     	}
