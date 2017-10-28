@@ -18,6 +18,9 @@ Pre-requisits:
 * Run `php artisan serve` from terminal to run the application
 * You can see the list of API and its description on Swagger API Documentation at `http://localhost:8000/api/documentation`
 
+### Running Test
+* Run `./vendor/bin/phpunit` from terminal
+
 ### Application Flow
 ##### As Customer
 1. Login as `customer` (username: `customer@mail.com`, password: `secret`) and copy the `token` to used on next request as an Authorization behaviour
